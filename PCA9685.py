@@ -2,7 +2,7 @@
 """Definitions and functions for the NXP PCA9685 12-bit Fm+ 16-ch I2C LED / PWM Driver"""
 
 # I2C address
-PCA9685_ADDR = 0x60
+PCA9685_ADDR = 0xC0  # 0x80 + [A5:A0 pins] -- default here assumes A5 pulled high
 PCA9685_ADDR_WR = "%c" % PCA9685_ADDR
 PCA9685_ADDR_RD = "%c" % (PCA9685_ADDR + 1)
 
