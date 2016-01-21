@@ -30,10 +30,6 @@ def PCA9685_pwm_chan(chan, on, off):
     """Set PWM parameters for selected channel (0-15)"""
     i2cWrite(PCA9685_ADDR_WR + chr(6 + (chan << 2)) + chr(on & 0xff) + chr(on >> 8) + chr(off & 0xff) + chr(off >> 8), 1, False)
     
-def PCA9685_duty_chan(chan, duty):
-    """Set PWM duty cycle (n/4096) for selected channel (0-15)"""
-    i2cWrite(PCA9685_ADDR_WR + chr(6 + (chan << 2)) + chr(duty & 0xff) + chr(duty >> 8) + "\x00\x00", 1, False)
-    
 def PCA9685_pwm_all(on, off):
     """Set PWM parameters for all channels"""
     i2cWrite(PCA9685_ADDR_WR + PCA9685_PWM_ALL + chr(on & 0xff) + chr(on >> 8) + chr(off & 0xff) + chr(off >> 8), 1, False)
@@ -43,3 +39,13 @@ def PCA9685_logic_chan(chan, is_set):
     val = "\x00\x10\x00\x00" if is_set else "\x00\x00\x00\x10"
     i2cWrite(PCA9685_ADDR_WR + chr(6 + (chan << 2)) + val, 1, False)
     
+def PCA9685_duty_chan(chan, duty):
+    """Set PWM duty cycle (n/4096) for selected channel (0-15)"""
+    if duty <= 0:
+        PCA9685_logic_chan(chan, False)
+    elif duty < 4096:
+        # Turn on at count=0, off at 'duty' count
+        i2cWrite(PCA9685_ADDR_WR + chr(6 + (chan << 2)) + "\x00\x00" + chr(duty & 0xff) + chr(duty >> 8), 1, False)
+    else:
+        PCA9685_logic_chan(chan, True)
+        
